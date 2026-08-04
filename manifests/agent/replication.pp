@@ -84,10 +84,10 @@ define aem::agent::replication(
       assert_type(Boolean, $batch_enabled)
     }
     if $batch_max_wait {
-      assert_type(Integer[1], $batch_max_wait)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $batch_max_wait)
     }
     if $batch_trigger_size {
-      assert_type(Integer[1], $batch_trigger_size)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $batch_trigger_size)
     }
 
     assert_type(Boolean, $enabled)
@@ -100,17 +100,17 @@ define aem::agent::replication(
       assert_type(Boolean, $protocol_close_conn)
     }
     if $protocol_conn_timeout {
-      assert_type(Integer[1], $protocol_conn_timeout)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $protocol_conn_timeout)
     }
     if $protocol_http_headers {
       assert_type(Array, $protocol_http_headers)
     }
     if $protocol_sock_timeout {
-      assert_type(Integer[1], $protocol_sock_timeout)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $protocol_sock_timeout)
     }
 
     if $proxy_port {
-      assert_type(Integer[1], $proxy_port)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $proxy_port)
     }
 
     if !$resource_type {
@@ -118,7 +118,7 @@ define aem::agent::replication(
     }
 
     if $retry_delay {
-      assert_type(Integer, $retry_delay)
+      assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $retry_delay)
     }
 
     if $reverse {
@@ -138,7 +138,7 @@ define aem::agent::replication(
     }
 
     if $timeout {
-      assert_type(Integer[1], $timeout)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $timeout)
     }
 
     if $trans_allow_exp_cert {

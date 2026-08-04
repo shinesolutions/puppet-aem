@@ -35,7 +35,7 @@ define aem::instance (
   }
 
   if $debug_port {
-    assert_type(Integer, $debug_port)
+    assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $debug_port)
   }
 
   if !$home {
@@ -76,7 +76,7 @@ define aem::instance (
     assert_type(Array, $crx_packages)
   }
 
-  assert_type(Integer, $port)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $port)
   assert_type(Array, $runmodes)
 
   assert_type(Boolean, $sample_content)
@@ -85,12 +85,12 @@ define aem::instance (
     "${status} is not supported for status. Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'."
   }
 
-  assert_type(Integer, $snooze)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $snooze)
   if ($ensure == 'present') {
     assert_type(Stdlib::Absolutepath, $source)
   }
 
-  assert_type(Integer, $timeout)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $timeout)
 
   assert_type(Pattern[/^(author|publish|standby)$/], $type) |$e, $a| {
     "${type} is not supported for type. Allowed values are 'author', 'publish' and 'standby'."

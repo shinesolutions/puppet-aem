@@ -44,7 +44,7 @@ define aem::dispatcher::farm(
   }
 
   if $allow_authorized {
-    assert_type(Integer[0, 1], $allow_authorized)
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $allow_authorized)
   }
 
   if $allowed_clients =~ Array {
@@ -98,7 +98,7 @@ define aem::dispatcher::farm(
   }
 
   if $cache_ttl {
-    assert_type(Integer[0, 1], $cache_ttl)
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $cache_ttl)
   }
 
   if $client_headers =~ Array {
@@ -110,7 +110,7 @@ define aem::dispatcher::farm(
   assert_type(Stdlib::Absolutepath, $docroot)
 
   if $failover {
-    assert_type(Integer[0, 1], $failover)
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $failover)
   }
 
   if $filters =~ Array {
@@ -122,7 +122,7 @@ define aem::dispatcher::farm(
   }
 
   if $grace_period {
-    assert_type(Integer[1], $grace_period)
+    assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $grace_period)
   }
 
   if $health_check_url {
@@ -174,7 +174,7 @@ define aem::dispatcher::farm(
   }
 
   if $propagate_synd_post {
-    assert_type(Integer[0, 1], $propagate_synd_post)
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $propagate_synd_post)
   }
 
   if $renders =~ Array {
@@ -186,15 +186,15 @@ define aem::dispatcher::farm(
   }
 
   if $retries {
-    assert_type(Integer[1], $retries)
+    assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $retries)
   }
 
   if $retry_delay {
-    assert_type(Integer[1], $retry_delay)
+    assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $retry_delay)
   }
 
   if $serve_stale {
-    assert_type(Integer[0, 1], $serve_stale)
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $serve_stale)
   }
 
   if $session_management {
@@ -213,7 +213,7 @@ define aem::dispatcher::farm(
       }
     }
     if has_key($session_management, 'timeout') {
-      assert_type(Integer[0], $session_management['timeout'])
+      assert_type(Variant[Integer[0], Pattern[/^\d+$/]], $session_management['timeout'])
     }
   }
 
@@ -222,7 +222,7 @@ define aem::dispatcher::farm(
   }
 
   if $stat_files_level {
-    assert_type(Integer[0], $stat_files_level)
+    assert_type(Variant[Integer[0], Pattern[/^\d+$/]], $stat_files_level)
   }
 
   if $statistics {
@@ -244,7 +244,7 @@ define aem::dispatcher::farm(
   }
 
   if $unavailable_penalty {
-    assert_type(Integer[1], $unavailable_penalty)
+    assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $unavailable_penalty)
   }
 
   if $vanity_urls {
@@ -253,7 +253,7 @@ define aem::dispatcher::farm(
       fail('Vanity Urls cache file is not specified.')
     } else {
       assert_type(Stdlib::Absolutepath, $vanity_urls['file'])
-      assert_type(Integer[0], $vanity_urls['delay'])
+      assert_type(Variant[Integer[0], Pattern[/^\d+$/]], $vanity_urls['delay'])
     }
   }
 

@@ -24,16 +24,16 @@ class aem::dispatcher (
     "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
   }
 
-  if $decline_root =~ Integer {
-    assert_type(Integer[0, 1], $decline_root)
+  if $decline_root =~ Variant[Integer, Pattern[/^-?\d+$/]] {
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $decline_root)
   } else {
     assert_type(Pattern[/^(on|off)$/], $decline_root) |$e, $a| {
       "${decline_root} is not supported for decline_root. Allowed values are 'on' and 'off'."
     }
   }
 
-  if $log_level =~ Integer {
-    assert_type(Integer[0, 4], $log_level)
+  if $log_level =~ Variant[Integer, Pattern[/^-?\d+$/]] {
+    assert_type(Variant[Integer[0, 4], Pattern[/^[0-4]$/]], $log_level)
   } else {
     assert_type(Pattern[/^(error|warn|info|debug|trace)$/], $log_level) |$e, $a| {
       "${log_level} is not supported for log_level. Allowed values are 'error', 'warn', 'info', 'debug' and 'trace'."
@@ -43,8 +43,8 @@ class aem::dispatcher (
   assert_type(Stdlib::Absolutepath, $module_file)
   $_mod_filename = basename($module_file)
 
-  if $use_processed_url =~ Integer {
-    assert_type(Integer[0, 1], $use_processed_url)
+  if $use_processed_url =~ Variant[Integer, Pattern[/^-?\d+$/]] {
+    assert_type(Variant[Integer[0, 1], Enum['0', '1']], $use_processed_url)
   } else {
     assert_type(Pattern[/^(on|off)$/], $use_processed_url) |$e, $a| {
       "${use_processed_url} is not supported for use_processed_url. Allowed values are 'on' and 'off'."
