@@ -15,23 +15,25 @@ define aem::osgi::config(
   $username       = undef,
 ){
 
-  validate_re($ensure, '^(present|absent)$',
-    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
+  }
 
   if $ensure == 'present' {
     if $properties == undef {
       fail('Properties must contain at least one entry.')
     }
 
-    if !is_hash($properties) {
+    if !($properties =~ Hash) {
       fail("Aem::Osgi::Config[${name}]: 'properties' must be a Hash of values")
     }
   }
 
-  validate_absolute_path($home)
+  assert_type(Stdlib::Absolutepath, $home)
 
-  validate_re($type, '^(console|file)$',
-    "${type} is not supported for type. Allowed values are 'console' and 'file'.")
+  assert_type(Pattern[/^(console|file)$/], $type) |$e, $a| {
+    "${type} is not supported for type. Allowed values are 'console' and 'file'."
+  }
 
 
   if $type == 'console' {
@@ -43,8 +45,9 @@ define aem::osgi::config(
       fail("Password must be specified if type == 'console'")
     }
     if $ensure == 'present' {
-      validate_re($handle_missing, '^(merge|remove)$',
-        "${handle_missing} is not supported for handle_missing. Allowed values are 'merge' and 'remove'.")
+      assert_type(Pattern[/^(merge|remove)$/], $handle_missing) |$e, $a| {
+        "${handle_missing} is not supported for handle_missing. Allowed values are 'merge' and 'remove'."
+      }
     }
   }
 

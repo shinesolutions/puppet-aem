@@ -18,7 +18,7 @@ define aem::service (
     fail('Home directory must be specified.')
   }
 
-  validate_absolute_path($home)
+  assert_type(Stdlib::Absolutepath, $home)
 
   case $::operatingsystem {
     'CentOS', 'Fedora', 'RedHat' : {

@@ -20,29 +20,35 @@ class aem::dispatcher (
 
   anchor { 'aem::dispatcher::begin': }
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
-
-  if is_integer($decline_root) {
-    validate_integer($decline_root, 1, 0)
-  } else {
-    validate_re($decline_root, '^(on|off)$', "${decline_root} is not supported for decline_root. Allowed values are 'on' and 'off'.")
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
   }
 
-  if is_integer($log_level) {
-    validate_integer($log_level, 4, 0)
+  if $decline_root =~ Integer {
+    assert_type(Integer[0, 1], $decline_root)
   } else {
-    validate_re($log_level, '^(error|warn|info|debug|trace)$',
-      "${log_level} is not supported for log_level. Allowed values are 'error', 'warn', 'info', 'debug' and 'trace'.")
+    assert_type(Pattern[/^(on|off)$/], $decline_root) |$e, $a| {
+      "${decline_root} is not supported for decline_root. Allowed values are 'on' and 'off'."
+    }
   }
 
-  validate_absolute_path($module_file)
+  if $log_level =~ Integer {
+    assert_type(Integer[0, 4], $log_level)
+  } else {
+    assert_type(Pattern[/^(error|warn|info|debug|trace)$/], $log_level) |$e, $a| {
+      "${log_level} is not supported for log_level. Allowed values are 'error', 'warn', 'info', 'debug' and 'trace'."
+    }
+  }
+
+  assert_type(Stdlib::Absolutepath, $module_file)
   $_mod_filename = basename($module_file)
 
-  if is_integer($use_processed_url) {
-    validate_integer($use_processed_url, 1, 0)
+  if $use_processed_url =~ Integer {
+    assert_type(Integer[0, 1], $use_processed_url)
   } else {
-    validate_re($use_processed_url, '^(on|off)$',
-      "${use_processed_url} is not supported for use_processed_url. Allowed values are 'on' and 'off'.")
+    assert_type(Pattern[/^(on|off)$/], $use_processed_url) |$e, $a| {
+      "${use_processed_url} is not supported for use_processed_url. Allowed values are 'on' and 'off'."
+    }
   }
 
   $config_file = $::aem::dispatcher::params::config_file

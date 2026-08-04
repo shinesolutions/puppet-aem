@@ -39,22 +39,24 @@ define aem::dispatcher::farm(
     fail('You must include the aem::dispatcher base class before using any dispatcher class or defined resources')
   }
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
-
-  if $allow_authorized {
-    validate_integer($allow_authorized, 1, 0)
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
   }
 
-  if is_array($allowed_clients) {
-    validate_hash($allowed_clients[0])
+  if $allow_authorized {
+    assert_type(Integer[0, 1], $allow_authorized)
+  }
+
+  if $allowed_clients =~ Array {
+    assert_type(Hash, $allowed_clients[0])
     $_allowed_clients = $allowed_clients
   } else {
-    validate_hash($allowed_clients)
+    assert_type(Hash, $allowed_clients)
     $_allowed_clients = [$allowed_clients]
   }
 
   if $auth_checker {
-    validate_hash($auth_checker)
+    assert_type(Hash, $auth_checker)
 
     if !has_key($auth_checker, 'url') {
       fail('Auth checker url is not specified.')
@@ -63,98 +65,98 @@ define aem::dispatcher::farm(
     if !has_key($auth_checker, 'filter') {
       fail('Auth checker filter are not specified.')
     } else {
-      if !is_array($auth_checker['filter']) {
+      if !($auth_checker['filter'] =~ Array) {
         fail('Auth checker filter must be an array.')
       }
-      validate_hash($auth_checker['filter'][0])
+      assert_type(Hash, $auth_checker['filter'][0])
     }
 
     if !has_key($auth_checker, 'headers') {
       fail('Auth checker headers are not specified.')
     } else {
-      if !is_array($auth_checker['headers']) {
+      if !($auth_checker['headers'] =~ Array) {
         fail('Auth checker headers must be an array.')
       }
-      validate_hash($auth_checker['headers'][0])
+      assert_type(Hash, $auth_checker['headers'][0])
     }
   }
 
   if $cache_headers {
-    if is_array($cache_headers) {
+    if $cache_headers =~ Array {
       $_cache_headers = $cache_headers
     } else {
       $_cache_headers = [$cache_headers]
     }
   }
 
-  if is_array($cache_rules) {
-    validate_hash($cache_rules[0])
+  if $cache_rules =~ Array {
+    assert_type(Hash, $cache_rules[0])
     $_cache_rules = $cache_rules
   } else {
-    validate_hash($cache_rules)
+    assert_type(Hash, $cache_rules)
     $_cache_rules = [$cache_rules]
   }
 
   if $cache_ttl {
-    validate_integer($cache_ttl, 1, 0)
+    assert_type(Integer[0, 1], $cache_ttl)
   }
 
-  if is_array($client_headers) {
+  if $client_headers =~ Array {
     $_client_headers = $client_headers
   } else {
     $_client_headers = [$client_headers]
   }
 
-  validate_absolute_path($docroot)
+  assert_type(Stdlib::Absolutepath, $docroot)
 
   if $failover {
-    validate_integer($failover, 1, 0)
+    assert_type(Integer[0, 1], $failover)
   }
 
-  if is_array($filters) {
-    validate_hash($filters[0])
+  if $filters =~ Array {
+    assert_type(Hash, $filters[0])
     $_filters = $filters
   } else {
-    validate_hash($filters)
+    assert_type(Hash, $filters)
     $_filters = [$filters]
   }
 
   if $grace_period {
-    validate_integer($grace_period, undef, 1)
+    assert_type(Integer[1], $grace_period)
   }
 
   if $health_check_url {
-    validate_string($health_check_url)
+    assert_type(String, $health_check_url)
   }
 
   if $ignore_parameters {
-    if is_array($ignore_parameters) {
-      validate_hash($ignore_parameters[0])
+    if $ignore_parameters =~ Array {
+      assert_type(Hash, $ignore_parameters[0])
       $_ignore_parameters = $ignore_parameters
     } else {
-      validate_hash($ignore_parameters)
+      assert_type(Hash, $ignore_parameters)
       $_ignore_parameters = [$ignore_parameters]
     }
   }
 
   if $invalidate_handler {
-    validate_absolute_path($invalidate_handler)
+    assert_type(Stdlib::Absolutepath, $invalidate_handler)
   } elsif $invalidate == undef {
     $_invalidate = $::aem::dispatcher::params::invalidate
   } else {
 
-    if is_array($invalidate) {
-      validate_hash($invalidate[0])
+    if $invalidate =~ Array {
+      assert_type(Hash, $invalidate[0])
       $_invalidate = $invalidate
     } else {
-      validate_hash($invalidate)
+      assert_type(Hash, $invalidate)
       $_invalidate = [$invalidate]
     }
   }
 
   if $priority {
     if $priority.is_a(Integer) {
-      validate_integer($priority, 99, 0)
+      assert_type(Integer[0, 99], $priority)
       if $priority < 10 {
         $priority_string = "0${priority}"
       }
@@ -172,89 +174,90 @@ define aem::dispatcher::farm(
   }
 
   if $propagate_synd_post {
-    validate_integer($propagate_synd_post, 1, 0)
+    assert_type(Integer[0, 1], $propagate_synd_post)
   }
 
-  if is_array($renders) {
-    validate_hash($renders[0])
+  if $renders =~ Array {
+    assert_type(Hash, $renders[0])
     $_renders = $renders
   } else {
-    validate_hash($renders)
+    assert_type(Hash, $renders)
     $_renders = [$renders]
   }
 
   if $retries {
-    validate_integer($retries, undef, 1)
+    assert_type(Integer[1], $retries)
   }
 
   if $retry_delay {
-    validate_integer($retry_delay, undef, 1)
+    assert_type(Integer[1], $retry_delay)
   }
 
   if $serve_stale {
-    validate_integer($serve_stale, 1, 0)
+    assert_type(Integer[0, 1], $serve_stale)
   }
 
   if $session_management {
     if $allow_authorized == 1 {
       fail('Allow authorized and session management are mutually exclusive.')
     }
-    validate_hash($session_management)
+    assert_type(Hash, $session_management)
     if !has_key($session_management, 'directory') {
       fail('Session management directory is not specified.')
     } else {
-      validate_absolute_path($session_management['directory'])
+      assert_type(Stdlib::Absolutepath, $session_management['directory'])
     }
     if has_key($session_management, 'encode') {
-      validate_re($session_management['encode'], '^(md5|hex)$',
-        "${session_management['encode']} is not supported for session_management['encode']. Allowed values are 'md5' and 'hex'.")
+      assert_type(Pattern[/^(md5|hex)$/], $session_management['encode']) |$e, $a| {
+        "${session_management['encode']} is not supported for session_management['encode']. Allowed values are 'md5' and 'hex'."
+      }
     }
     if has_key($session_management, 'timeout') {
-      validate_integer($session_management['timeout'], undef, 0)
+      assert_type(Integer[0], $session_management['timeout'])
     }
   }
 
   if $stat_file {
-    validate_absolute_path($stat_file)
+    assert_type(Stdlib::Absolutepath, $stat_file)
   }
 
   if $stat_files_level {
-    validate_integer($stat_files_level, undef, 0)
+    assert_type(Integer[0], $stat_files_level)
   }
 
   if $statistics {
-    if is_array($statistics) {
-      validate_hash($statistics[0])
+    if $statistics =~ Array {
+      assert_type(Hash, $statistics[0])
       $_statistics = $statistics
     } else {
-      validate_hash($statistics)
+      assert_type(Hash, $statistics)
       $_statistics = [$statistics]
     }
   }
 
   if $sticky_connections {
-    if is_array($sticky_connections) {
-      validate_string($sticky_connections[0])
+    if $sticky_connections =~ Array {
+      assert_type(String, $sticky_connections[0])
     } else {
-      validate_string($sticky_connections)
+      assert_type(String, $sticky_connections)
     }
   }
 
   if $unavailable_penalty {
-    validate_integer($unavailable_penalty, undef, 1)
+    assert_type(Integer[1], $unavailable_penalty)
   }
 
   if $vanity_urls {
-    validate_hash($vanity_urls)
+    assert_type(Hash, $vanity_urls)
     if !has_key($vanity_urls, 'file') {
       fail('Vanity Urls cache file is not specified.')
     } else {
-      validate_absolute_path($vanity_urls['file'])
-      validate_integer($vanity_urls['delay'], undef, 0)
+      assert_type(Stdlib::Absolutepath, $vanity_urls['file'])
+      assert_type(Integer[0], $vanity_urls['delay'])
     }
   }
 
-  if !is_array($virtualhosts) {
+  if !($virtualhosts =~ Array) {
     $_virtualhosts = [$virtualhosts]
   } else {
     $_virtualhosts = $virtualhosts
