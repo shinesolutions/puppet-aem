@@ -58,11 +58,11 @@ define aem::dispatcher::farm(
   if $auth_checker {
     assert_type(Hash, $auth_checker)
 
-    if !has_key($auth_checker, 'url') {
+    if !('url' in $auth_checker) {
       fail('Auth checker url is not specified.')
     }
 
-    if !has_key($auth_checker, 'filter') {
+    if !('filter' in $auth_checker) {
       fail('Auth checker filter are not specified.')
     } else {
       if !($auth_checker['filter'] =~ Array) {
@@ -71,7 +71,7 @@ define aem::dispatcher::farm(
       assert_type(Hash, $auth_checker['filter'][0])
     }
 
-    if !has_key($auth_checker, 'headers') {
+    if !('headers' in $auth_checker) {
       fail('Auth checker headers are not specified.')
     } else {
       if !($auth_checker['headers'] =~ Array) {
@@ -202,17 +202,17 @@ define aem::dispatcher::farm(
       fail('Allow authorized and session management are mutually exclusive.')
     }
     assert_type(Hash, $session_management)
-    if !has_key($session_management, 'directory') {
+    if !('directory' in $session_management) {
       fail('Session management directory is not specified.')
     } else {
       assert_type(Stdlib::Absolutepath, $session_management['directory'])
     }
-    if has_key($session_management, 'encode') {
+    if 'encode' in $session_management {
       assert_type(Pattern[/^(md5|hex)$/], $session_management['encode']) |$e, $a| {
         "${session_management['encode']} is not supported for session_management['encode']. Allowed values are 'md5' and 'hex'."
       }
     }
-    if has_key($session_management, 'timeout') {
+    if 'timeout' in $session_management {
       assert_type(Variant[Integer[0], Pattern[/^\d+$/]], $session_management['timeout'])
     }
   }
@@ -249,7 +249,7 @@ define aem::dispatcher::farm(
 
   if $vanity_urls {
     assert_type(Hash, $vanity_urls)
-    if !has_key($vanity_urls, 'file') {
+    if !('file' in $vanity_urls) {
       fail('Vanity Urls cache file is not specified.')
     } else {
       assert_type(Stdlib::Absolutepath, $vanity_urls['file'])
