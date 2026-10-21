@@ -57,7 +57,7 @@ define aem::config(
 
   if $osgi_configs {
 
-    if is_array($osgi_configs) {
+    if $osgi_configs =~ Array {
       $_osgi_configs = $osgi_configs
     } else {
       $_osgi_configs = [$osgi_configs]

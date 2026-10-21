@@ -12,13 +12,15 @@ define aem::license (
   $user        = 'aem',
   $version     = undef) {
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
+  }
 
   if $home == undef {
     fail('Home directory must be specified.')
   }
 
-  validate_absolute_path($home)
+  assert_type(Stdlib::Absolutepath, $home)
 
   if $ensure == 'present' and $license_key == undef {
     fail('License key must be specified.')

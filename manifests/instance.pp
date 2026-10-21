@@ -30,30 +30,32 @@ define aem::instance (
 
   anchor { "aem::${name}::begin": }
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
+  }
 
   if $debug_port {
-    validate_integer($debug_port)
+    assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $debug_port)
   }
 
   if !$home {
-    case $::kernel {
+    case $facts['kernel'] {
       'Linux' : { $_home = '/opt/aem' }
-      default : { fail("'${module_name}' has no default 'home' value for '${::kernel}'") }
+      default : { fail("'${module_name}' has no default 'home' value for '${facts['kernel']}'") }
     }
   } else {
     $_home = $home
   }
 
-  validate_absolute_path($_home)
+  assert_type(Stdlib::Absolutepath, $_home)
 
-  validate_bool($manage_group)
+  assert_type(Boolean, $manage_group)
 
   if $manage_group {
     group { $group: ensure => $ensure, }
   }
 
-  validate_bool($manage_user)
+  assert_type(Boolean, $manage_user)
 
   if $manage_user {
     user { $user:
@@ -62,41 +64,42 @@ define aem::instance (
     }
   }
 
-  validate_bool($manage_home)
+  assert_type(Boolean, $manage_home)
 
   if $osgi_configs {
-    if !is_hash($osgi_configs) and !(is_array($osgi_configs) and is_hash($osgi_configs[0])) {
+    if !($osgi_configs =~ Hash) and !($osgi_configs =~ Array and $osgi_configs[0] =~ Hash) {
       fail("Aem::Instance[${name}]: 'osgi_configs' must be either a Hash or an Array of Hashes")
     }
   }
 
   if $crx_packages {
-    validate_array($crx_packages)
+    assert_type(Array, $crx_packages)
   }
 
-  validate_integer($port)
-  validate_array($runmodes)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $port)
+  assert_type(Array, $runmodes)
 
-  validate_bool($sample_content)
+  assert_type(Boolean, $sample_content)
 
-  validate_re($status, '^(enabled|disabled|running|unmanaged)$',
-    "${status} is not supported for status. Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'.")
+  assert_type(Pattern[/^(enabled|disabled|running|unmanaged)$/], $status) |$e, $a| {
+    "${status} is not supported for status. Allowed values are 'enabled', 'disabled', 'running' and 'unmanaged'."
+  }
 
-  validate_integer($snooze)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $snooze)
   if ($ensure == 'present') {
-    validate_absolute_path($source)
+    assert_type(Stdlib::Absolutepath, $source)
   }
 
-  validate_integer($timeout)
+  assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $timeout)
 
-  validate_re(
-    $type,
-    '^(author|publish|standby)$',
+  assert_type(Pattern[/^(author|publish|standby)$/], $type) |$e, $a| {
     "${type} is not supported for type. Allowed values are 'author', 'publish' and 'standby'."
-  )
+  }
 
   if $version {
-    validate_re($version, '^\d+\.\d+(\.\d+)?$', "${version} is not a valid version.")
+    assert_type(Pattern[/^\d+\.\d+(\.\d+)?$/], $version) |$e, $a| {
+      "${version} is not a valid version."
+    }
   }
 
   # ### Manage actions

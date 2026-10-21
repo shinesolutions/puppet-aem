@@ -54,11 +54,15 @@ define aem::agent::replication(
   $username              = undef
 ) {
 
-  validate_re($name, '^[A-Za-z0-9\-_]+$', "Name [${name}] must contain only letters, numbers, underscores, or hyphens.")
+  assert_type(Pattern[/^[A-Za-z0-9\-_]+$/], $name) |$e, $a| {
+    "Name [${name}] must contain only letters, numbers, underscores, or hyphens."
+  }
 
-  validate_re($ensure, '^(present|absent)$', "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'.")
+  assert_type(Pattern[/^(present|absent)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are 'present' and 'absent'."
+  }
 
-  validate_absolute_path($home)
+  assert_type(Stdlib::Absolutepath, $home)
 
   if $runmode == undef {
     fail("Parameter 'runmode' must be specified.")
@@ -73,39 +77,40 @@ define aem::agent::replication(
 
   if $ensure == 'present' {
     if $mixin_types {
-      validate_array($mixin_types)
+      assert_type(Array, $mixin_types)
     }
 
     if $batch_enabled {
-      validate_bool($batch_enabled)
+      assert_type(Boolean, $batch_enabled)
     }
     if $batch_max_wait {
-      validate_integer($batch_max_wait, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $batch_max_wait)
     }
     if $batch_trigger_size {
-      validate_integer($batch_trigger_size, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $batch_trigger_size)
     }
 
-    validate_bool($enabled)
+    assert_type(Boolean, $enabled)
 
-    validate_re($log_level, '^(debug|info|error)$',
-      "${log_level} is not supported for log_level. Allowed values are 'debug', 'info', and 'error'.")
+    assert_type(Pattern[/^(debug|info|error)$/], $log_level) |$e, $a| {
+      "${log_level} is not supported for log_level. Allowed values are 'debug', 'info', and 'error'."
+    }
 
     if $protocol_close_conn {
-      validate_bool($protocol_close_conn)
+      assert_type(Boolean, $protocol_close_conn)
     }
     if $protocol_conn_timeout {
-      validate_integer($protocol_conn_timeout, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $protocol_conn_timeout)
     }
     if $protocol_http_headers {
-      validate_array($protocol_http_headers)
+      assert_type(Array, $protocol_http_headers)
     }
     if $protocol_sock_timeout {
-      validate_integer($protocol_sock_timeout, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $protocol_sock_timeout)
     }
 
     if $proxy_port {
-      validate_integer($proxy_port, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $proxy_port)
     }
 
     if !$resource_type {
@@ -113,11 +118,11 @@ define aem::agent::replication(
     }
 
     if $retry_delay {
-      validate_integer($retry_delay)
+      assert_type(Variant[Integer, Pattern[/^-?\d+$/]], $retry_delay)
     }
 
     if $reverse {
-      validate_bool($reverse)
+      assert_type(Boolean, $reverse)
     }
 
     if !$serialize_type {
@@ -125,7 +130,7 @@ define aem::agent::replication(
     }
 
     if $static_directory {
-      validate_absolute_path($static_directory)
+      assert_type(Stdlib::Absolutepath, $static_directory)
     }
 
     if !$template {
@@ -133,38 +138,39 @@ define aem::agent::replication(
     }
 
     if $timeout {
-      validate_integer($timeout, undef, 1)
+      assert_type(Variant[Integer[1], Pattern[/^[1-9]\d*$/]], $timeout)
     }
 
     if $trans_allow_exp_cert {
-      validate_bool($trans_allow_exp_cert)
+      assert_type(Boolean, $trans_allow_exp_cert)
     }
 
     if $trans_ssl {
-      validate_re($trans_ssl, '^(default|relaxed|clientauth)$',
-        "${trans_ssl} is not supported for trans_ssl. Allowed values are 'default', 'relaxed', and 'clientauth'.")
+      assert_type(Pattern[/^(default|relaxed|clientauth)$/], $trans_ssl) |$e, $a| {
+        "${trans_ssl} is not supported for trans_ssl. Allowed values are 'default', 'relaxed', and 'clientauth'."
+      }
     }
 
     if $trigger_ignore_def {
-      validate_bool($trigger_ignore_def)
+      assert_type(Boolean, $trigger_ignore_def)
     }
     if $trigger_no_status {
-      validate_bool($trigger_no_status)
+      assert_type(Boolean, $trigger_no_status)
     }
     if $trigger_no_version {
-      validate_bool($trigger_no_version)
+      assert_type(Boolean, $trigger_no_version)
     }
     if $trigger_on_dist {
-      validate_bool($trigger_on_dist)
+      assert_type(Boolean, $trigger_on_dist)
     }
     if $trigger_on_mod {
-      validate_bool($trigger_on_mod)
+      assert_type(Boolean, $trigger_on_mod)
     }
     if $trigger_on_receive {
-      validate_bool($trigger_on_receive)
+      assert_type(Boolean, $trigger_on_receive)
     }
     if $trigger_onoff_time {
-      validate_bool($trigger_onoff_time)
+      assert_type(Boolean, $trigger_onoff_time)
     }
 
 

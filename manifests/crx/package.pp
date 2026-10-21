@@ -20,13 +20,14 @@ define aem::crx::package (
   $retry_timeout   = undef,
 ) {
 
-  validate_re($ensure, '^(present|installed|absent|purged)$',
-    "${ensure} is not supported for ensure. Allowed values are: 'present', 'installed', 'absent' or 'purged'.")
+  assert_type(Pattern[/^(present|installed|absent|purged)$/], $ensure) |$e, $a| {
+    "${ensure} is not supported for ensure. Allowed values are: 'present', 'installed', 'absent' or 'purged'."
+  }
 
-  validate_absolute_path($home)
+  assert_type(Stdlib::Absolutepath, $home)
 
   if $ensure != 'absent' and $ensure != 'purged' {
-    validate_absolute_path($source)
+    assert_type(Stdlib::Absolutepath, $source)
   }
 
   case $type {
